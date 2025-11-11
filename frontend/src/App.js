@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -14,23 +14,36 @@ import Sidebar from './components/Sidebar';
 import ProtectedRoute from './components/ProtectedRoute';
 import { useAuth } from './context/AuthContext';
 
-function App(){
+function App() {
   const { user } = useAuth();
+  const location = useLocation();
+
+  // Pages where Sidebar should be hidden
+  const noSidebarRoutes = ['/login', '/register', '/welcome'];
+
   return (
     <div className="app">
-      {user && <Sidebar />}
+      {/* ✅ Sidebar visible only when user logged in AND not on auth pages */}
+      {user && !noSidebarRoutes.includes(location.pathname) && <Sidebar />}
+
       <div className="container">
         <Routes>
+          {/* Public Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/" element={
-            user 
-              ? <Navigate to="/dashboard" replace /> 
-              : sessionStorage.getItem('welcomed') 
-                ? <Navigate to="/login" replace />
-                : <Welcome />
-          } />
 
+          <Route
+            path="/"
+            element={
+              user
+                ? <Navigate to="/dashboard" replace />
+                : sessionStorage.getItem('welcomed')
+                  ? <Navigate to="/login" replace />
+                  : <Welcome />
+            }
+          />
+
+          {/* Protected Routes */}
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/transactions" element={<ProtectedRoute><Transactions /></ProtectedRoute>} />
           <Route path="/budgets" element={<ProtectedRoute><Budgets /></ProtectedRoute>} />
@@ -39,6 +52,7 @@ function App(){
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
 
+          {/* Fallback */}
           <Route path="*" element={<div>Page not found</div>} />
         </Routes>
       </div>

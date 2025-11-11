@@ -15,6 +15,7 @@ import java.util.List;
 @RequestMapping("/api/transactions")
 @RequiredArgsConstructor
 public class TransactionController {
+
     private final TransactionService transactionService;
 
     @PostMapping
@@ -32,5 +33,18 @@ public class TransactionController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
         return ResponseEntity.ok(transactionService.getTransactionsByDateRange(start, end));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TransactionResponse> updateTransaction(
+            @PathVariable Long id,
+            @RequestBody TransactionRequest request) {
+        return ResponseEntity.ok(transactionService.updateTransaction(id, request));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTransaction(@PathVariable Long id) {
+        transactionService.deleteTransaction(id);
+        return ResponseEntity.noContent().build();
     }
 }

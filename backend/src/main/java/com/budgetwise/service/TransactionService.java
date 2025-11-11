@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class TransactionService {
+
     private final TransactionRepository transactionRepository;
     private final UserRepository userRepository;
 
@@ -33,6 +34,7 @@ public class TransactionService {
                 .description(request.getDescription())
                 .amount(request.getAmount())
                 .category(request.getCategory())
+                .paymentMethod(request.getPaymentMethod())
                 .date(request.getDate())
                 .type(request.getType())
                 .user(user)
@@ -40,6 +42,31 @@ public class TransactionService {
 
         transaction = transactionRepository.save(transaction);
         return mapToResponse(transaction);
+    }
+
+    public TransactionResponse updateTransaction(Long id, TransactionRequest request) {
+        User user = getCurrentUser();
+        Transaction txn = transactionRepository.findById(id)
+                .filter(t -> t.getUser().equals(user))
+                .orElseThrow(() -> new RuntimeException("Transaction not found or unauthorized"));
+
+        txn.setDescription(request.getDescription());
+        txn.setAmount(request.getAmount());
+        txn.setCategory(request.getCategory());
+        txn.setType(request.getType());
+        txn.setDate(request.getDate());
+        txn.setPaymentMethod(request.getPaymentMethod());
+
+        Transaction updated = transactionRepository.save(txn);
+        return mapToResponse(updated);
+    }
+
+    public void deleteTransaction(Long id) {
+        User user = getCurrentUser();
+        Transaction txn = transactionRepository.findById(id)
+                .filter(t -> t.getUser().equals(user))
+                .orElseThrow(() -> new RuntimeException("Transaction not found or unauthorized"));
+        transactionRepository.delete(txn);
     }
 
     public List<TransactionResponse> getUserTransactions() {
@@ -64,6 +91,7 @@ public class TransactionService {
                 .description(transaction.getDescription())
                 .amount(transaction.getAmount())
                 .category(transaction.getCategory())
+                .paymentMethod(transaction.getPaymentMethod())
                 .date(transaction.getDate())
                 .type(transaction.getType())
                 .build();

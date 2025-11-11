@@ -10,13 +10,14 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class TransactionResponse {
     private Long id;
     private String description;
     private BigDecimal amount;
     private String category;
-    private LocalDateTime date;
     private String type;
+    private LocalDateTime date;
+    private String paymentMethod;
 }

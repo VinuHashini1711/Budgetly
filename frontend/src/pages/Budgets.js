@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { fakeApi } from '../api/fakeApi';
+import '../styles/Budgets.css';
 
 export default function Budgets(){
   const [budgets, setBudgets] = useState([]);

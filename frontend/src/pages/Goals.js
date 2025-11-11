@@ -1,4 +1,5 @@
 import React from 'react';
+import '../styles/Goals.css';
 
 export default function Goals() {
   return (

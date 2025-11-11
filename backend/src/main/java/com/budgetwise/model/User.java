@@ -19,28 +19,40 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
+    // ✅ Username required and unique
+    @Column(name = "username", nullable = false, unique = true)
+    private String username;
 
-    @Column(nullable = false, unique = true)
+    // ✅ Email required and unique
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
+    // ✅ Password required
+    @Column(name = "password", nullable = false)
     private String password;
 
+    // ✅ Enum role (ROLE_USER, ROLE_ADMIN)
     @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
     private Role role;
 
+    // ✅ Optional field - no NOT NULL constraint
+    @Column(name = "profile_image", nullable = true)
+    private String profileImage;
+
+    // ✅ Relationships
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Transaction> transactions;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Budget> budgets;
 
+    // --- Spring Security implementation ---
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
@@ -48,7 +60,12 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return username;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
     }
 
     @Override

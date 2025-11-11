@@ -14,19 +14,25 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+/**
+ * Handles JWT token generation, extraction, and validation.
+ * Ensures consistent signing, expiration, and claim structure.
+ */
 @Component
 public class JwtTokenProvider {
+
     @Value("${jwt.secret}")
     private String secret;
 
     @Value("${jwt.expiration}")
     private Long expiration;
 
+    // ----------- Key -----------
     private Key getSigningKey() {
-        byte[] keyBytes = secret.getBytes();
-        return Keys.hmacShaKeyFor(keyBytes);
+        return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
+    // ----------- Extractors -----------
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -52,8 +58,18 @@ public class JwtTokenProvider {
         return extractExpiration(token).before(new Date());
     }
 
+    // ----------- Token Creation -----------
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
+
+        // Extract single authority cleanly (e.g., ROLE_USER)
+        String role = userDetails.getAuthorities().stream()
+                .findFirst()
+                .map(Object::toString)
+                .orElse("ROLE_USER");
+
+        claims.put("role", role);
+
         return createToken(claims, userDetails.getUsername());
     }
 
@@ -67,6 +83,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    // ----------- Validation -----------
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));

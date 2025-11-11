@@ -7,10 +7,11 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class AuthResponse {
     private String token;
     private String email;
-    private String name;
+    private String username;
+    private String message; // ✅ Added this field for errors or info messages
 }

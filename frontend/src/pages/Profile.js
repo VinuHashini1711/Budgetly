@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { fakeApi } from '../api/fakeApi';
+import axios from '../api/axios';
+import '../styles/Profile.css';
 
 export default function Profile(){
   const { user, logout } = useAuth();
@@ -13,6 +15,9 @@ export default function Profile(){
     dateOfBirth: '',
     bio: ''
   });
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [showUploader, setShowUploader] = useState(false);
 
   useEffect(() => {
     if(user) {
@@ -73,19 +78,92 @@ export default function Profile(){
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 24, marginBottom: 24 }}>
         {/* Profile Picture and Name */}
         <div className="card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '24px' }}>
-          <div style={{
-            width: 80,
-            height: 80,
-            borderRadius: '50%',
-            background: '#6366f1',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 32,
-            color: 'white',
-            marginBottom: 16
-          }}>
-            {getInitial(profile.fullName)}
+          <div>
+            {previewUrl ? (
+              <img src={previewUrl} alt="avatar" style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', marginBottom: 16 }} />
+            ) : profile.profileImageUrl ? (
+              <img src={profile.profileImageUrl} alt="avatar" style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', marginBottom: 16 }} />
+            ) : (
+              <div style={{
+                width: 80,
+                height: 80,
+                borderRadius: '50%',
+                background: '#6366f1',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 32,
+                color: 'white',
+                marginBottom: 16
+              }}>{getInitial(profile.fullName)}</div>
+            )}
+          </div>
+          <div style={{ marginBottom: 12 }}>
+            <div onClick={() => setShowUploader(s => !s)} style={{ cursor: 'pointer', color: '#2563eb', marginBottom: 8 }}>
+              {showUploader ? 'Cancel' : (profile.profileImageUrl || previewUrl) ? 'Change profile picture' : 'Add profile picture'}
+            </div>
+            {showUploader && (
+              <div>
+                {/* hidden native input - will be triggered by Choose button */}
+                <input
+                  id="avatar-input"
+                  type="file"
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                  onChange={e => {
+                    const file = e.target.files[0];
+                    setSelectedFile(file);
+                    if (file) {
+                      const url = URL.createObjectURL(file);
+                      setPreviewUrl(url);
+                    }
+                  }}
+                />
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button
+                    className="btn"
+                    onClick={() => document.getElementById('avatar-input').click()}
+                  >
+                    Choose File
+                  </button>
+                  <button
+                    className="btn"
+                    onClick={async () => {
+                      if (!selectedFile) return alert('Select an image first');
+                      const token = localStorage.getItem('bw_token');
+                      if (!token) return alert('You must be logged in to upload a profile picture');
+                      const fd = new FormData();
+                      fd.append('file', selectedFile);
+                      try {
+                        const res = await axios.post('/profile/avatar', fd, {
+                          headers: {
+                            'Content-Type': 'multipart/form-data',
+                            Authorization: `Bearer ${token}`
+                          }
+                        });
+                        const data = res.data;
+                        // update local profile and persist
+                        const updated = { ...profile };
+                        if (data.profileImageUrl) updated.profileImageUrl = data.profileImageUrl;
+                        setProfile(updated);
+                        localStorage.setItem('user_profile', JSON.stringify(updated));
+                        setShowUploader(false);
+                        setSelectedFile(null);
+                        setPreviewUrl(null);
+                        alert('Profile picture uploaded');
+                      } catch (err) {
+                        console.error(err);
+                        const status = err?.response?.status;
+                        const msg = err?.response?.data?.message || err?.response?.data?.error || err.message || 'Upload failed';
+                        alert(`Upload failed (status ${status}): ${msg}`);
+                      }
+                    }}
+                  >
+                    Upload
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
           <div style={{ fontSize: 20, fontWeight: 600, marginBottom: 4 }}>{profile.fullName}</div>
           <div style={{ color: '#6b7280', marginBottom: 8 }}>{profile.email}</div>

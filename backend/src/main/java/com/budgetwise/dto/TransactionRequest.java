@@ -10,12 +10,13 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class TransactionRequest {
     private String description;
     private BigDecimal amount;
     private String category;
+    private String type; // INCOME or EXPENSE
     private LocalDateTime date;
-    private String type;  // INCOME or EXPENSE
+    private String paymentMethod; // Cash, Card, UPI, etc.
 }

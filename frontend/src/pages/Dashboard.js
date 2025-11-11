@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { fakeApi } from '../api/fakeApi';
+import '../styles/Dashboard.css';
 
 export default function Dashboard(){
   const [summary, setSummary] = useState({ income:0, expenses:0, recent:[] });

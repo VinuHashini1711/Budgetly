@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import '../styles/Settings.css';
 
 export default function Settings(){
   const [settings, setSettings] = useState({

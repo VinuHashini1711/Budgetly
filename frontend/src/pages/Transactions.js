@@ -1,219 +1,304 @@
-import React, { useEffect, useState } from 'react';
-import { fakeApi } from '../api/fakeApi';
+import React, { useEffect, useState } from "react";
+import axios from "../api/axios";
+import "../styles/Transactions.css";
 
-const CATEGORIES = ['Salary', 'Housing', 'Food', 'Transport', 'Shopping', 'Entertainment', 'Healthcare', 'Education', 'Other'];
+const BASE_URL = "/api/transactions";
+const DEFAULT_CURRENCIES = [
+  "₹ INR - Indian Rupee",
+  "$ USD - US Dollar",
+  "€ EUR - Euro",
+  "£ GBP - British Pound",
+  "¥ JPY - Japanese Yen",
+  "₩ KRW - Korean Won",
+  "A$ AUD - Australian Dollar",
+  "C$ CAD - Canadian Dollar"
+];
 
-export default function Transactions(){
-  const [txns, setTxns] = useState([]);
-  const [filter, setFilter] = useState('all');
-  const [search, setSearch] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All Categories');
-  const [form, setForm] = useState({ 
-    title:'', 
-    amount:0, 
-    type:'expense', 
-    category:'Housing', 
-    date:new Date().toISOString().slice(0,10),
-    paymentMethod: 'Cash'
+export default function Transactions() {
+  const [transactions, setTransactions] = useState([]);
+  const [editing, setEditing] = useState(null);
+  const [form, setForm] = useState({
+    title: "",
+    amount: "",
+    type: "expense",
+    category: "Food",
+    paymentMethod: "Cash",
+    currency: "₹ INR - Indian Rupee",
+    date: new Date().toISOString().slice(0, 10)
   });
+  const [categories, setCategories] = useState([
+    "Salary",
+    "Housing",
+    "Food",
+    "Transport",
+    "Shopping",
+    "Entertainment",
+    "Healthcare",
+    "Education",
+    "Other"
+  ]);
+  const [showOtherCategoryInput, setShowOtherCategoryInput] = useState(false);
+  const [newCategory, setNewCategory] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  useEffect(()=>{ load(); },[]);
-  
-  const load = async ()=>{
-    const list = await fakeApi.listTransactions();
-    setTxns(list);
+  // Load all transactions
+  useEffect(() => {
+    loadTransactions();
+  }, []);
+
+  const loadTransactions = async () => {
+    try {
+      const res = await axios.get(BASE_URL);
+      setTransactions(res.data || []);
+    } catch (err) {
+      console.error("Error loading transactions:", err);
+    }
   };
 
-  const add = async (e)=>{
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((f) => ({ ...f, [name]: value }));
+
+    // Dynamic category input trigger
+    if (name === "category") {
+      if (value === "Other") {
+        setShowOtherCategoryInput(true);
+      } else {
+        setShowOtherCategoryInput(false);
+        setNewCategory("");
+      }
+    }
+  };
+
+  const handleOtherCategorySubmit = () => {
+    if (!newCategory.trim()) return;
+    setCategories((prev) => [...prev.filter((c) => c !== "Other"), newCategory, "Other"]);
+    setForm((f) => ({ ...f, category: newCategory }));
+    setShowOtherCategoryInput(false);
+    setNewCategory("");
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const t = { ...form, amount:Number(form.amount) };
-    await fakeApi.addTransaction(t);
-    setForm({ 
-      title:'', 
-      amount:0, 
-      type:'expense', 
-      category:'Housing', 
-      date:new Date().toISOString().slice(0,10),
-      paymentMethod: 'Cash'
+    setLoading(true);
+
+    try {
+      const payload = {
+        ...form,
+        amount: parseFloat(form.amount),
+        date: new Date(form.date).toISOString()
+      };
+
+      if (editing) {
+        await axios.put(`${BASE_URL}/${editing}`, payload);
+      } else {
+        await axios.post(BASE_URL, payload);
+      }
+
+      await loadTransactions();
+      resetForm();
+    } catch (err) {
+      console.error("Error saving transaction:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resetForm = () => {
+    setForm({
+      title: "",
+      amount: "",
+      type: "expense",
+      category: "Food",
+      paymentMethod: "Cash",
+      currency: "₹ INR - Indian Rupee",
+      date: new Date().toISOString().slice(0, 10)
     });
-    load();
-    document.getElementById('addForm').close();
+    setEditing(null);
+    setShowOtherCategoryInput(false);
   };
 
-  const remove = async (id)=>{ 
-    await fakeApi.deleteTransaction(id); 
-    load(); 
+  const handleEdit = (txn) => {
+    setEditing(txn.id);
+    setForm({
+      title: txn.title,
+      amount: txn.amount,
+      type: txn.type,
+      category: txn.category,
+      paymentMethod: txn.paymentMethod,
+      currency: txn.currency || "₹ INR - Indian Rupee",
+      date: txn.date.slice(0, 10)
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const exportCSV = () => {
-    const headers = ['Date', 'Title', 'Category', 'Amount', 'Type', 'Payment Method'];
-    const csvContent = [
-      headers.join(','),
-      ...txns.map(t => [
-        t.date,
-        t.title,
-        t.category,
-        t.amount,
-        t.type,
-        t.paymentMethod
-      ].join(','))
-    ].join('\\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'transactions.csv';
-    link.click();
+  const handleDelete = async (id) => {
+    if (!window.confirm("Delete this transaction?")) return;
+    await axios.delete(`${BASE_URL}/${id}`);
+    loadTransactions();
   };
-
-  const filteredTxns = txns
-    .filter(t => {
-      if (filter === 'income') return t.type === 'income';
-      if (filter === 'expenses') return t.type === 'expense';
-      return true;
-    })
-    .filter(t => {
-      if (selectedCategory !== 'All Categories') return t.category === selectedCategory;
-      return true;
-    })
-    .filter(t => 
-      t.title.toLowerCase().includes(search.toLowerCase()) ||
-      t.category.toLowerCase().includes(search.toLowerCase())
-    );
 
   return (
-    <div>
-      <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:24}}>
-        <div>
-          <h1 className="page-title" style={{marginBottom:4}}>Transactions</h1>
-          <div style={{color:'#6b7280'}}>Track all your income and expenses</div>
-        </div>
-        <div style={{display:'flex', gap:8}}>
-          <button onClick={exportCSV} className="btn secondary" style={{display:'flex', alignItems:'center', gap:4}}>
-            <span style={{fontSize:18}}>↓</span> Export CSV
-          </button>
-          <button onClick={()=>document.getElementById('addForm').showModal()} className="btn">
-            + Add Transaction
-          </button>
-        </div>
-      </div>
-
-      <div style={{display:'flex', gap:12, marginBottom:16}}>
-        <div className="card" style={{flex:1}}>
-          <input 
-            type="text" 
-            value={search} 
-            onChange={e=>setSearch(e.target.value)}
-            placeholder="Search transactions..."
-            style={{width:'100%', padding:'10px 16px', border:'1px solid #e5e7eb', borderRadius:8}}
-          />
-        </div>
-        <div style={{display:'flex', alignItems:'center', gap:2, background:'#fff', padding:4, borderRadius:8}}>
-          <button 
-            onClick={()=>setFilter('all')} 
-            className={filter==='all'?'btn':'btn secondary'}
-          >All</button>
-          <button 
-            onClick={()=>setFilter('income')} 
-            className={filter==='income'?'btn':'btn secondary'}
-          >Income</button>
-          <button 
-            onClick={()=>setFilter('expenses')} 
-            className={filter==='expenses'?'btn':'btn secondary'}
-          >Expenses</button>
-        </div>
-        <select 
-          value={selectedCategory} 
-          onChange={e=>setSelectedCategory(e.target.value)}
-          style={{padding:'8px 16px', borderRadius:8, border:'1px solid #e5e7eb'}}
-        >
-          <option>All Categories</option>
-          {CATEGORIES.map(c => <option key={c}>{c}</option>)}
-        </select>
-      </div>
-
-      <div className="card">
-        <div className="transactions-list">
-          {filteredTxns.length === 0 && 
-            <div style={{textAlign:'center', padding:32, color:'#6b7280'}}>
-              No transactions found
-            </div>
-          }
-          {filteredTxns.map(t=> (
-            <div key={t.id} className="txn" style={{display:'flex', justifyContent:'space-between', padding:'16px 20px', alignItems:'center'}}>
-              <div style={{display:'flex', gap:16, alignItems:'center'}}>
-                <div style={{
-                  width:40, height:40, borderRadius:'50%', 
-                  background: t.type==='income' ? '#dcfce7' : '#fee2e2',
-                  color: t.type==='income' ? '#15803d' : '#dc2626',
-                  display:'flex', alignItems:'center', justifyContent:'center',
-                  fontSize:20
-                }}>
-                  {t.type === 'income' ? '↑' : '↓'}
-                </div>
-                <div>
-                  <div style={{fontWeight:600, fontSize:15}}>{t.title}</div>
-                  <div style={{fontSize:13, color:'#6b7280'}}>{t.category} • {t.paymentMethod} • {new Date(t.date).toLocaleDateString()}</div>
-                </div>
-              </div>
-              <div style={{display:'flex', gap:12, alignItems:'center'}}>
-                <div style={{fontWeight:600, fontSize:15, color:t.type==='income'?'#15803d':'#dc2626'}}>
-                  {t.type==='income'?'+':'-'}₹{t.amount.toFixed(2)}
-                </div>
-                <button onClick={()=>remove(t.id)} style={{padding:8, border:'none', background:'none', cursor:'pointer', color:'#dc2626'}}>
-                  🗑
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <dialog id="addForm" className="card" style={{border:'none', borderRadius:12, minWidth:400}}>
-        <h3 style={{marginTop:0}}>Add Transaction</h3>
-        <form onSubmit={add}>
+    <div className="transactions-container">
+      <div className="transaction-form-wrapper">
+        <h2>{editing ? "Edit Transaction" : "Add Transaction"}</h2>
+        <form onSubmit={handleSubmit} className="transaction-form">
           <div className="form-row">
             <label>Title</label>
-            <input value={form.title} onChange={e=>setForm({...form, title:e.target.value})} required />
+            <input
+              name="title"
+              value={form.title}
+              onChange={handleChange}
+              placeholder="Enter title"
+              required
+            />
           </div>
-          <div className="form-row">
-            <label>Amount</label>
-            <input type="number" value={form.amount} onChange={e=>setForm({...form, amount:e.target.value})} required />
+
+          <div className="form-grid">
+            <div>
+              <label>Amount</label>
+              <input
+                type="number"
+                name="amount"
+                value={form.amount}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div>
+              <label>Currency</label>
+              <select
+                name="currency"
+                value={form.currency}
+                onChange={handleChange}
+              >
+                {DEFAULT_CURRENCIES.map((cur) => (
+                  <option key={cur}>{cur}</option>
+                ))}
+              </select>
+            </div>
           </div>
-          <div className="form-row">
-            <label>Type</label>
-            <select value={form.type} onChange={e=>setForm({...form, type:e.target.value})}>
-              <option value="expense">Expense</option>
-              <option value="income">Income</option>
-            </select>
+
+          <div className="form-grid">
+            <div>
+              <label>Type</label>
+              <select name="type" value={form.type} onChange={handleChange}>
+                <option value="income">Income</option>
+                <option value="expense">Expense</option>
+              </select>
+            </div>
+
+            <div>
+              <label>Category</label>
+              <select
+                name="category"
+                value={form.category}
+                onChange={handleChange}
+              >
+                {categories.map((c) => (
+                  <option key={c}>{c}</option>
+                ))}
+              </select>
+              {showOtherCategoryInput && (
+                <div className="other-category">
+                  <input
+                    type="text"
+                    placeholder="Enter category name"
+                    value={newCategory}
+                    onChange={(e) => setNewCategory(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    className="btn small"
+                    onClick={handleOtherCategorySubmit}
+                  >
+                    Add
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
-          <div className="form-row">
-            <label>Category</label>
-            <select value={form.category} onChange={e=>setForm({...form, category:e.target.value})}>
-              {CATEGORIES.map(c => <option key={c}>{c}</option>)}
-            </select>
+
+          <div className="form-grid">
+            <div>
+              <label>Payment Method</label>
+              <select
+                name="paymentMethod"
+                value={form.paymentMethod}
+                onChange={handleChange}
+              >
+                <option>Cash</option>
+                <option>Card</option>
+                <option>UPI</option>
+                <option>Bank Transfer</option>
+              </select>
+            </div>
+            <div>
+              <label>Date</label>
+              <input
+                type="date"
+                name="date"
+                value={form.date}
+                onChange={handleChange}
+              />
+            </div>
           </div>
-          <div className="form-row">
-            <label>Date</label>
-            <input type="date" value={form.date} onChange={e=>setForm({...form, date:e.target.value})} />
-          </div>
-          <div className="form-row">
-            <label>Payment Method</label>
-            <select value={form.paymentMethod} onChange={e=>setForm({...form, paymentMethod:e.target.value})}>
-              <option>Cash</option>
-              <option>Card</option>
-              <option>UPI</option>
-              <option>Bank Transfer</option>
-            </select>
-          </div>
-          <div style={{display:'flex', gap:8, marginTop:24}}>
-            <button type="submit" className="btn">Add Transaction</button>
-            <button type="button" className="btn secondary" onClick={()=>document.getElementById('addForm').close()}>
-              Cancel
+
+          <div className="form-actions">
+            <button type="submit" className="btn primary" disabled={loading}>
+              {loading ? "Saving..." : editing ? "Update" : "Add"}
             </button>
+            {editing && (
+              <button type="button" className="btn secondary" onClick={resetForm}>
+                Cancel
+              </button>
+            )}
           </div>
         </form>
-      </dialog>
+      </div>
+
+      <div className="transaction-list">
+        <h3>Transactions</h3>
+        {transactions.length === 0 && (
+          <div className="empty">No transactions found</div>
+        )}
+        {transactions.map((t) => (
+          <div key={t.id} className="transaction-item">
+            <div>
+              <div className="txn-title">{t.title}</div>
+              <div className="txn-sub">
+                {t.category} • {t.paymentMethod} •{" "}
+                {new Date(t.date).toLocaleDateString()}
+              </div>
+            </div>
+            <div className="txn-actions">
+              <span
+                className={`txn-amount ${
+                  t.type === "income" ? "income" : "expense"
+                }`}
+              >
+                {t.type === "income" ? "+" : "-"}
+                {t.currency?.split(" ")[0] || "₹"}
+                {parseFloat(t.amount).toFixed(2)}
+              </span>
+              <button
+                className="edit-btn"
+                onClick={() => handleEdit(t)}
+                title="Edit"
+              >
+                ✏️
+              </button>
+              <button
+                className="delete-btn"
+                onClick={() => handleDelete(t.id)}
+                title="Delete"
+              >
+                🗑️
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

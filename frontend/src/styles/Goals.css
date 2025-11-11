@@ -1,0 +1,157 @@
+/* Goals Page Styles */
+
+.goals-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.goals-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.goals-header h1 {
+  font-weight: 700;
+  font-size: 32px;
+  margin: 0;
+}
+
+.goals-header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.goals-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.goal-card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.goal-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.goal-card-title {
+  font-weight: 600;
+  font-size: 16px;
+  margin: 0;
+}
+
+.goal-card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.goal-card-action-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.goal-card-action-btn:hover {
+  background-color: #f3f4f6;
+}
+
+.goal-progress-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.goal-progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #666;
+}
+
+.goal-progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.goal-progress-fill {
+  height: 100%;
+  background-color: #10b981;
+  transition: width 0.3s;
+}
+
+.goal-modal {
+  border: none;
+  border-radius: 10px;
+  padding: 0;
+  max-width: 480px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.goal-modal-content {
+  padding: 24px;
+}
+
+.goal-modal-content h2 {
+  font-weight: 700;
+  font-size: 22px;
+  margin-bottom: 18px;
+  margin-top: 0;
+}
+
+.goal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.goal-form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.goal-form-group label {
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+.goal-form-group input,
+.goal-form-group select {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.goal-modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+  justify-content: flex-end;
+}
+
+.goal-empty-state {
+  padding: 32px;
+  text-align: center;
+  color: #888;
+}
