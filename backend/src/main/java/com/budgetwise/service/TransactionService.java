@@ -22,8 +22,9 @@ public class TransactionService {
     private final UserRepository userRepository;
 
     private User getCurrentUser() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findByEmail(email)
+        String identifier = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByUsername(identifier)
+                .or(() -> userRepository.findByEmail(identifier))
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
@@ -37,6 +38,7 @@ public class TransactionService {
                 .paymentMethod(request.getPaymentMethod())
                 .date(request.getDate())
                 .type(request.getType())
+                .currency(request.getCurrency())
                 .user(user)
                 .build();
 
@@ -56,6 +58,7 @@ public class TransactionService {
         txn.setType(request.getType());
         txn.setDate(request.getDate());
         txn.setPaymentMethod(request.getPaymentMethod());
+        txn.setCurrency(request.getCurrency());
 
         Transaction updated = transactionRepository.save(txn);
         return mapToResponse(updated);
@@ -94,6 +97,7 @@ public class TransactionService {
                 .paymentMethod(transaction.getPaymentMethod())
                 .date(transaction.getDate())
                 .type(transaction.getType())
+                .currency(transaction.getCurrency())
                 .build();
     }
 }

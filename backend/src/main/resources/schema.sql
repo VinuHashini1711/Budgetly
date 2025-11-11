@@ -16,6 +16,8 @@ CREATE TABLE IF NOT EXISTS transactions (
     category VARCHAR(100) NOT NULL,
     date TIMESTAMP NOT NULL,
     type VARCHAR(50) NOT NULL,
+    payment_method VARCHAR(100),
+    currency VARCHAR(50),
     user_id BIGINT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );

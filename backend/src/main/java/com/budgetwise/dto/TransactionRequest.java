@@ -16,7 +16,8 @@ public class TransactionRequest {
     private String description;
     private BigDecimal amount;
     private String category;
-    private String type; // INCOME or EXPENSE
+    private String type; // INCOME or EXPENSE (case-insensitive)
     private LocalDateTime date;
     private String paymentMethod; // Cash, Card, UPI, etc.
+    private String currency; // Currency code or display string
 }

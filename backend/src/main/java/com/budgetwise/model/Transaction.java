@@ -35,8 +35,11 @@ public class Transaction {
     @Column(nullable = false)
     private String type; // INCOME or EXPENSE
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String paymentMethod;
+
+    @Column(nullable = true)
+    private String currency; // Currency code or display string
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

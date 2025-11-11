@@ -20,4 +20,5 @@ public class TransactionResponse {
     private String type;
     private LocalDateTime date;
     private String paymentMethod;
+    private String currency;
 }

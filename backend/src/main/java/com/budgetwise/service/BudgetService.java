@@ -21,8 +21,9 @@ public class BudgetService {
     private final UserRepository userRepository;
 
     private User getCurrentUser() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findByEmail(email)
+        String identifier = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByUsername(identifier)
+                .or(() -> userRepository.findByEmail(identifier))
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
