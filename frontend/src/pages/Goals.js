@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from '../api/axios';
 import { TransactionContext } from '../context/TransactionContext';
 import { useTheme } from '../context/ThemeContext';
+import ChatbotButton from '../components/ChatbotButton';
 import '../styles/Goals.css';
 
 export default function Goals() {
@@ -645,6 +646,7 @@ export default function Goals() {
           </div>
         </div>
       )}
+      <ChatbotButton />
     </div>
   );
 }

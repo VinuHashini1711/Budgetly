@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/api/profile")
 @RequiredArgsConstructor
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class ProfileController {
 
     private final ProfileService profileService;

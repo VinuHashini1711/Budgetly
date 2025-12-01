@@ -1,6 +1,6 @@
 -- Create Users Table
 CREATE TABLE IF NOT EXISTS users (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) NOT NULL UNIQUE,
     name VARCHAR(255),
     email VARCHAR(255) NOT NULL UNIQUE,
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- Create Transactions Table
 CREATE TABLE IF NOT EXISTS transactions (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
     description VARCHAR(255) NOT NULL,
     amount DECIMAL(19,2) NOT NULL,
     category VARCHAR(100) NOT NULL,
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS transactions (
 
 -- Create Budgets Table
 CREATE TABLE IF NOT EXISTS budgets (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
     category VARCHAR(100) NOT NULL,
     amount DECIMAL(19,2) NOT NULL,
     start_date DATE NOT NULL,
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS budgets (
 
 -- Create Goals Table
 CREATE TABLE IF NOT EXISTS goals (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
     goal_name VARCHAR(255) NOT NULL,
     category VARCHAR(100) NOT NULL,
     target_amount DECIMAL(19,2) NOT NULL,
@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS goals (
 
 -- Create Posts Table
 CREATE TABLE IF NOT EXISTS posts (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     category VARCHAR(100) NOT NULL,
     content TEXT NOT NULL,
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS posts (
 
 -- Create Comments Table
 CREATE TABLE IF NOT EXISTS comments (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
     content TEXT NOT NULL,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP,
@@ -82,7 +82,7 @@ CREATE TABLE IF NOT EXISTS comments (
 
 -- Create Likes Table
 CREATE TABLE IF NOT EXISTS likes (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
     post_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
     FOREIGN KEY (post_id) REFERENCES posts(id),
@@ -92,7 +92,7 @@ CREATE TABLE IF NOT EXISTS likes (
 
 -- Create Settings Table
 CREATE TABLE IF NOT EXISTS settings (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT NOT NULL UNIQUE,
     language VARCHAR(100) NOT NULL DEFAULT 'us English',
     currency VARCHAR(100) NOT NULL DEFAULT 'INR (₹) - Indian Rupee',

@@ -10,6 +10,7 @@ import Settings from './pages/Settings';
 import AIInsights from './pages/AIInsights';
 import Goals from './pages/Goals';
 import Community from './pages/Community';
+import Export from './pages/Export';
 import Welcome from './pages/Welcome';
 import Sidebar from './components/Sidebar';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -66,6 +67,7 @@ function AppContent() {
           <Route path="/goals" element={<ProtectedRoute><Goals /></ProtectedRoute>} />
           <Route path="/ai-insights" element={<ProtectedRoute><AIInsights /></ProtectedRoute>} />
           <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
+          <Route path="/export" element={<ProtectedRoute><Export /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
 

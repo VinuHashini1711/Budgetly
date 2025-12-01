@@ -8,8 +8,7 @@ import com.budgetwise.model.User;
 import com.budgetwise.repository.UserRepository;
 import com.budgetwise.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +19,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
-    private final AuthenticationManager authenticationManager;
+
 
     // ---------------- REGISTER ----------------
     public AuthResponse register(RegisterRequest request) {
@@ -67,9 +66,10 @@ public class AuthService {
 
         var user = userOpt.orElseThrow(() -> new RuntimeException("User not found"));
 
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(user.getEmail(), request.getPassword())
-        );
+        // Simple password check without Spring Security authentication
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid password");
+        }
 
         var token = jwtTokenProvider.generateToken(user);
 

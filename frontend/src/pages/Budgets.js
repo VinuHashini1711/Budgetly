@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import axios from '../api/axios';
 import { TransactionContext } from '../context/TransactionContext';
+import ChatbotButton from '../components/ChatbotButton';
 import '../styles/Budgets.css';
 
 export default function Budgets(){
@@ -352,6 +353,7 @@ export default function Budgets(){
           </div>
         </div>
       )}
+      <ChatbotButton />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import axios from "../api/axios";
 import { TransactionContext } from "../context/TransactionContext";
+import ChatbotButton from "../components/ChatbotButton";
 import "../styles/Transactions.css";
 
 const BASE_URL = "/api/transactions";
@@ -704,6 +705,7 @@ export default function Transactions() {
           </div>
         </div>
       )}
+      <ChatbotButton />
     </div>
   );
 }

@@ -63,6 +63,12 @@ export default function Sidebar(){
               Community
             </span>
           </NavLink>
+          <NavLink to="/export" className={({isActive})=>isActive? 'active':''}>
+            <span style={{display:'flex', gap:8, alignItems:'center'}}>
+              <span style={{width:20, display:'inline-flex'}}>📊</span>
+              Export
+            </span>
+          </NavLink>
           <NavLink to="/profile" className={({isActive})=>isActive? 'active':''}>
             <span style={{display:'flex', gap:8, alignItems:'center'}}>
               <span style={{width:20, display:'inline-flex'}}>👤</span>

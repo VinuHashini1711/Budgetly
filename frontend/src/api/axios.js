@@ -3,7 +3,7 @@ import axios from 'axios';
 // Axios instance with JWT interceptor
 // Note: baseURL is empty since we use full paths like /api/transactions
 const instance = axios.create({
-  baseURL: '',
+  baseURL: 'http://localhost:8085',
   headers: { 'Content-Type': 'application/json' }
 });
 

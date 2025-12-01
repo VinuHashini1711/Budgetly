@@ -3,6 +3,8 @@ import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, PointElement,
 import { Pie, Line } from 'react-chartjs-2';
 import { useAuth } from '../context/AuthContext';
 import { TransactionContext } from '../context/TransactionContext';
+import axios from '../api/axios';
+import ChatbotButton from '../components/ChatbotButton';
 import '../styles/Dashboard.css';
 
 ChartJS.register(ArcElement, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
@@ -13,6 +15,7 @@ export default function Dashboard(){
   const [summary, setSummary] = useState({ income: 0, expenses: 0, net: 0, savingsRate: 0 });
   const [categoryData, setCategoryData] = useState(null);
   const [last6MonthsData, setLast6MonthsData] = useState(null);
+  const [aiInsights, setAiInsights] = useState([]);
 
   useEffect(() => {
     loadTransactions();
@@ -123,6 +126,35 @@ export default function Dashboard(){
 
   // Calculate active goals (assuming we have goals data)
   const activeGoals = 1; // Placeholder - can be updated with actual goals
+
+  const fetchAIInsights = async () => {
+    try {
+      const response = await axios.get('/ai/spending-analysis');
+      if (response.data && response.data.insights) {
+        const insightsList = response.data.insights.split('\n')
+          .filter(line => line.trim() && !line.includes('insights:'))
+          .map(line => line.replace(/^\d+\.\s*/, '').trim())
+          .filter(line => line.length > 10)
+          .slice(0, 3);
+        setAiInsights(insightsList);
+      }
+    } catch (error) {
+      console.error('Error fetching AI insights:', error);
+      setAiInsights([
+        'Consider setting budgets for your highest spending categories to better control expenses.',
+        `With a savings rate of ${summary.savingsRate}%, look into investment opportunities to grow your wealth.`,
+        'Review your spending patterns regularly to identify areas for potential savings.'
+      ]);
+    }
+  };
+
+  useEffect(() => {
+    if (transactions.length > 0) {
+      fetchAIInsights();
+    }
+  }, [summary]);
+
+
 
   return (
     <div className="dashboard-page">
@@ -306,21 +338,21 @@ export default function Dashboard(){
             <h3>✨ AI Financial Insights</h3>
           </div>
           <div className="insights-list">
-            <div className="insight-item">
-              <span className="insight-number">1</span>
-              <p>Consider setting a budget for housing costs to reduce spending in this category, aiming to lower it below $25000, which could free up additional funds for savings or investment.</p>
-            </div>
-            <div className="insight-item">
-              <span className="insight-number">2</span>
-              <p>With a savings rate of {summary.savingsRate}%, look into diversifying savings by investing in stocks, bonds, or mutual funds to potentially increase returns.</p>
-            </div>
-            <div className="insight-item">
-              <span className="insight-number">3</span>
-              <p>Evaluate expenses regularly and seek opportunities to reduce discretionary spending, allowing for an increased ability to invest or save more aggressively for future goals.</p>
-            </div>
+            {aiInsights.length > 0 ? aiInsights.map((insight, index) => (
+              <div key={index} className="insight-item">
+                <span className="insight-number">{index + 1}</span>
+                <p>{insight}</p>
+              </div>
+            )) : (
+              <div className="insight-item">
+                <span className="insight-number">💡</span>
+                <p>Loading personalized insights based on your spending patterns...</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
+      <ChatbotButton />
     </div>
   );
 }

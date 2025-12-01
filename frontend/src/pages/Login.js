@@ -107,7 +107,31 @@ export default function Login() {
                   <input type="checkbox" />
                   <span>Remember me</span>
                 </label>
-                <a href="#" className="login-forgot-password">Forgot password?</a>
+                <button 
+                type="button"
+                className="login-forgot-password"
+                onClick={() => {
+                  const email = prompt('Enter your email address:');
+                  if (email) {
+                    fetch('http://localhost:8090/api/auth/forgot-password', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ email })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                      if (data.message) {
+                        alert('Password reset email sent! Check your inbox.');
+                      } else {
+                        alert(data.error || 'Failed to send reset email');
+                      }
+                    })
+                    .catch(() => alert('Failed to send reset email'));
+                  }
+                }}
+              >
+                Forgot password?
+              </button>
               </div>
 
               {/* Login Button */}

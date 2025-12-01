@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import '../styles/Register.css';
+import '../styles/Login.css';
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -25,7 +25,6 @@ export default function Register() {
     generateCaptcha();
   }, []);
 
-  // Generate random captcha
   const generateCaptcha = () => {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
     let result = '';
@@ -44,7 +43,6 @@ export default function Register() {
     setError('');
     setSuccessMsg('');
 
-    // --- Validations ---
     if (!form.username || !form.email || !form.password) {
       setError('All fields are required.');
       return;
@@ -64,7 +62,6 @@ export default function Register() {
       return;
     }
 
-    // --- Send request ---
     const res = await register({
       username: form.username,
       email: form.email,
@@ -80,7 +77,6 @@ export default function Register() {
       return;
     }
 
-    // ✅ Registration Success
     setSuccessMsg(res.data?.message || 'Registration successful!');
     setTimeout(() => navigate('/login'), 1500);
   };
@@ -91,217 +87,198 @@ export default function Register() {
   };
 
   return (
-    <div className="auth-wrapper">
-      <div className="card auth-card">
-        <h2
-          style={{
-            textAlign: 'center',
-            marginBottom: 24,
-            color: '#2563eb',
-            fontSize: 24,
-            fontWeight: 'bold',
-          }}
-        >
-          Create Your Account
-        </h2>
+    <div className="login-modern-wrapper">
+      {/* Animated Background */}
+      <div className="login-animated-bg">
+        <div className="login-blob blob-1"></div>
+        <div className="login-blob blob-2"></div>
+        <div className="login-blob blob-3"></div>
+      </div>
 
-        {/* Error message */}
-        {error && (
-          <div
-            style={{
-              color: '#dc2626',
-              marginBottom: 16,
-              background: '#fef2f2',
-              padding: '10px 16px',
-              borderRadius: 8,
-              fontSize: 14,
-            }}
-          >
-            Registration failed: {error}
-          </div>
-        )}
-
-        {/* Success message */}
-        {successMsg && (
-          <div
-            style={{
-              color: '#166534',
-              marginBottom: 16,
-              background: '#dcfce7',
-              padding: '10px 16px',
-              borderRadius: 8,
-              fontSize: 14,
-            }}
-          >
-            {successMsg}
-          </div>
-        )}
-
-        <form onSubmit={submit}>
-          {/* Username */}
-          <div className="form-row">
-            <label>Username</label>
-            <input
-              type="text"
-              name="username"
-              value={form.username}
-              onChange={handleChange}
-              required
-              style={{ padding: '10px 16px' }}
-            />
-          </div>
-
-          {/* Email */}
-          <div className="form-row">
-            <label>Email</label>
-            <input
-              type="email"
-              name="email"
-              value={form.email}
-              onChange={handleChange}
-              required
-              style={{ padding: '10px 16px' }}
-            />
-          </div>
-
-          {/* Password */}
-          <div className="form-row">
-            <label>Password</label>
-            <div style={{ position: 'relative' }}>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                name="password"
-                value={form.password}
-                onChange={handleChange}
-                required
-                style={{ padding: '10px 16px', width: '100%' }}
-              />
-              <button
-                type="button"
-                onClick={() => togglePasswordVisibility('password')}
-                style={{
-                  position: 'absolute',
-                  right: 12,
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  border: 'none',
-                  background: 'none',
-                  color: '#6b7280',
-                  cursor: 'pointer',
-                }}
-              >
-                {showPassword ? '👁️' : '👁️‍🗨️'}
-              </button>
+      {/* Main Container */}
+      <div className="login-modern-container">
+        {/* Register Form - Centered */}
+        <div className="login-center-panel">
+          <div className="login-form-wrapper">
+            <div className="login-form-header">
+              <h2>Create Your Account</h2>
+              <p>Join BudgetwiseAI to start managing your finances</p>
             </div>
-          </div>
 
-          {/* Confirm Password */}
-          <div className="form-row">
-            <label>Confirm Password</label>
-            <div style={{ position: 'relative' }}>
-              <input
-                type={showConfirmPassword ? 'text' : 'password'}
-                name="confirmPassword"
-                value={form.confirmPassword}
-                onChange={handleChange}
-                required
-                style={{ padding: '10px 16px', width: '100%' }}
-              />
-              <button
-                type="button"
-                onClick={() => togglePasswordVisibility('confirm')}
-                style={{
-                  position: 'absolute',
-                  right: 12,
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  border: 'none',
-                  background: 'none',
-                  color: '#6b7280',
-                  cursor: 'pointer',
-                }}
-              >
-                {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
-              </button>
-            </div>
-          </div>
-
-          {/* Captcha */}
-          <div className="form-row">
-            <label>Captcha</label>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <div
-                style={{
-                  background: '#f3f4f6',
-                  padding: '8px 16px',
-                  borderRadius: 6,
-                  fontFamily: 'monospace',
-                  letterSpacing: 2,
-                  userSelect: 'none',
-                }}
-              >
-                {captcha}
+            {error && (
+              <div className="login-error-banner">
+                <span className="login-error-icon">⚠️</span>
+                <div>
+                  <strong>Registration Error</strong>
+                  <p>{error}</p>
+                </div>
               </div>
+            )}
+
+            {successMsg && (
+              <div className="login-error-banner" style={{ background: 'linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)', border: '1px solid #6ee7b7' }}>
+                <span className="login-error-icon">✅</span>
+                <div>
+                  <strong style={{ color: '#065f46' }}>Success</strong>
+                  <p style={{ color: '#047857' }}>{successMsg}</p>
+                </div>
+              </div>
+            )}
+
+            <form onSubmit={submit} className="login-form-modern">
+              {/* Username */}
+              <div className="login-input-group">
+                <label htmlFor="username" className="login-label">
+                  <span className="login-label-icon">👤</span>
+                  Username
+                </label>
+                <input
+                  id="username"
+                  type="text"
+                  name="username"
+                  value={form.username}
+                  onChange={handleChange}
+                  placeholder="Enter your username"
+                  required
+                  className="login-input-field"
+                />
+              </div>
+
+              {/* Email */}
+              <div className="login-input-group">
+                <label htmlFor="email" className="login-label">
+                  <span className="login-label-icon">📧</span>
+                  Email
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  name="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  placeholder="Enter your email"
+                  required
+                  className="login-input-field"
+                />
+              </div>
+
+              {/* Password */}
+              <div className="login-input-group">
+                <label htmlFor="password" className="login-label">
+                  <span className="login-label-icon">🔐</span>
+                  Password
+                </label>
+                <div className="login-password-wrapper">
+                  <input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    value={form.password}
+                    onChange={handleChange}
+                    placeholder="Enter your password"
+                    required
+                    className="login-input-field"
+                  />
+                  <button
+                    type="button"
+                    className="login-toggle-password"
+                    onClick={() => togglePasswordVisibility('password')}
+                  >
+                    {showPassword ? '👁️' : '👁️🗨️'}
+                  </button>
+                </div>
+              </div>
+
+              {/* Confirm Password */}
+              <div className="login-input-group">
+                <label htmlFor="confirmPassword" className="login-label">
+                  <span className="login-label-icon">🔐</span>
+                  Confirm Password
+                </label>
+                <div className="login-password-wrapper">
+                  <input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    name="confirmPassword"
+                    value={form.confirmPassword}
+                    onChange={handleChange}
+                    placeholder="Confirm your password"
+                    required
+                    className="login-input-field"
+                  />
+                  <button
+                    type="button"
+                    className="login-toggle-password"
+                    onClick={() => togglePasswordVisibility('confirm')}
+                  >
+                    {showConfirmPassword ? '👁️' : '👁️🗨️'}
+                  </button>
+                </div>
+              </div>
+
+              {/* Captcha */}
+              <div className="login-input-group">
+                <label htmlFor="captcha" className="login-label">
+                  <span className="login-label-icon">🔒</span>
+                  Captcha
+                </label>
+                <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 10 }}>
+                  <div style={{
+                    background: '#1e293b',
+                    color: '#f1f5f9',
+                    padding: '12px 18px',
+                    borderRadius: 8,
+                    fontFamily: 'monospace',
+                    letterSpacing: 3,
+                    userSelect: 'none',
+                    border: '2px solid #334155'
+                  }}>
+                    {captcha}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={generateCaptcha}
+                    style={{
+                      border: 'none',
+                      background: '#667eea',
+                      color: 'white',
+                      cursor: 'pointer',
+                      fontSize: 16,
+                      padding: '8px 12px',
+                      borderRadius: 6
+                    }}
+                  >
+                    ↺
+                  </button>
+                </div>
+                <input
+                  id="captcha"
+                  type="text"
+                  name="captchaInput"
+                  value={form.captchaInput}
+                  onChange={handleChange}
+                  placeholder="Enter captcha"
+                  required
+                  className="login-input-field"
+                />
+              </div>
+
+              {/* Register Button */}
               <button
-                type="button"
-                onClick={generateCaptcha}
-                style={{
-                  border: 'none',
-                  background: 'none',
-                  color: '#2563eb',
-                  cursor: 'pointer',
-                  fontSize: 20,
-                }}
+                type="submit"
+                className="login-submit-btn"
               >
-                ↺
+                Create Account
+                <span className="login-btn-arrow">→</span>
               </button>
-            </div>
-            <input
-              type="text"
-              name="captchaInput"
-              value={form.captchaInput}
-              onChange={handleChange}
-              placeholder="Enter captcha"
-              required
-              style={{ padding: '10px 16px', marginTop: 8 }}
-            />
-          </div>
 
-          {/* Register Button */}
-          <button
-            type="submit"
-            className="btn"
-            style={{
-              width: '100%',
-              padding: '12px',
-              marginTop: 8,
-              backgroundColor: '#2563eb',
-              color: 'white',
-              border: 'none',
-              borderRadius: 8,
-              fontWeight: 600,
-              cursor: 'pointer',
-            }}
-          >
-            Register
-          </button>
-
-          <div
-            style={{
-              textAlign: 'center',
-              marginTop: 16,
-              fontSize: 14,
-            }}
-          >
-            Already have an account?{' '}
-            <Link
-              to="/login"
-              style={{ color: '#2563eb', textDecoration: 'none' }}
-            >
-              Login here
-            </Link>
+              {/* Login Link */}
+              <div className="login-register-prompt">
+                <p>Already have an account? <Link to="/login" className="login-register-link">Sign in</Link></p>
+              </div>
+            </form>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );

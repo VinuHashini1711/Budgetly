@@ -34,6 +34,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/health").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/profile/avatar/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/api/profile/**").authenticated()
@@ -55,6 +56,7 @@ public class SecurityConfig {
         // allow frontend and local testing origins
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:3000",
+                "http://localhost:3001",
                 "http://localhost:8080"
         ));
 

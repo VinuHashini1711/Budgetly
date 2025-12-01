@@ -1,76 +1,66 @@
 package com.budgetwise.controller;
 
-import com.budgetwise.dto.AuthRequest;
-import com.budgetwise.dto.AuthResponse;
+import com.budgetwise.dto.LoginRequest;
 import com.budgetwise.dto.RegisterRequest;
-import com.budgetwise.service.AuthService;
+import com.budgetwise.dto.AuthResponse;
+import com.budgetwise.model.User;
+import com.budgetwise.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*") // ✅ Allow React frontend or any other client
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class AuthController {
 
-    private final AuthService authService;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    // ---------------- REGISTER ----------------
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
         try {
-            AuthResponse response = authService.register(request);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } 
-        catch (RuntimeException ex) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new AuthResponse(null, null, null, "Registration failed: " + ex.getMessage()));
-        } 
-        catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new AuthResponse(null, null, null, "Unexpected error: " + ex.getMessage()));
+            User user = new User();
+            user.setUsername(request.getUsername());
+            user.setEmail(request.getEmail());
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+            user.setRole(com.budgetwise.model.Role.ROLE_USER);
+            userRepository.save(user);
+            
+            return ResponseEntity.ok(AuthResponse.builder()
+                .token("dummy-token")
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .message("Registration successful")
+                .build());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                .body(AuthResponse.builder().message(e.getMessage()).build());
         }
     }
 
-    // ---------------- LOGIN (email or username) ----------------
     @PostMapping("/login")
-    public ResponseEntity<?> authenticate(@RequestBody AuthRequest request) {
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
         try {
-            AuthResponse response = authService.authenticate(request);
-            return ResponseEntity.ok(response);
-        } 
-        catch (RuntimeException ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new AuthResponse(null, null, null, "Login failed: " + ex.getMessage()));
-        } 
-        catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new AuthResponse(null, null, null, "Unexpected error: " + ex.getMessage()));
-        }
-    }
-
-    // ---------------- LOGOUT ----------------
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestHeader(value = "Authorization", required = false) String authHeader) {
-        try {
-            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(new AuthResponse(null, null, null, "No valid token provided"));
+            User user = userRepository.findByUsername(request.getIdentifier())
+                .or(() -> userRepository.findByEmail(request.getIdentifier()))
+                .orElseThrow(() -> new RuntimeException("User not found"));
+            
+            if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+                throw new RuntimeException("Invalid password");
             }
-
-            String token = authHeader.substring(7);
-            authService.logout(token);
-
-            return ResponseEntity.ok(
-                    new AuthResponse(null, null, null, "Logout successful")
-            );
-
-        } 
-        catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new AuthResponse(null, null, null, "Logout failed: " + ex.getMessage()));
+            
+            return ResponseEntity.ok(AuthResponse.builder()
+                .token("dummy-token")
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .message("Login successful")
+                .build());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                .body(AuthResponse.builder().message(e.getMessage()).build());
         }
     }
 }
