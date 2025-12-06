@@ -48,7 +48,7 @@ body[style*="color: rgb(241, 245, 249)"] {
 .container{
   flex:1; 
   padding:32px;
-  margin-left: 260px;
+  margin-left: 300px;
   transition: margin-left 0.3s;
   height: 100vh;
   overflow-y: auto;
@@ -69,14 +69,14 @@ body[style*="background: rgb(15, 23, 42)"] .card {
 
 /* Sidebar */
 .sidebar{
-  width:260px; 
+  width:300px; 
   background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
   border-right:2px solid #e5e7eb; 
   padding:24px 16px; 
   display:flex; 
   flex-direction:column; 
   justify-content:space-between;
-  transition: background 0.3s, border-color 0.3s;
+  transition: width 0.3s, background 0.3s, border-color 0.3s;
   box-shadow: 4px 0 12px rgba(0, 0, 0, 0.08);
   position: fixed;
   height: 100vh;
@@ -84,6 +84,10 @@ body[style*="background: rgb(15, 23, 42)"] .card {
   top: 0;
   overflow-y: auto;
   z-index: 1000;
+}
+
+.sidebar.collapsed {
+  width: 80px;
 }
 
 body[style*="background: rgb(15, 23, 42)"] .sidebar {
@@ -97,6 +101,19 @@ body[style*="background: rgb(15, 23, 42)"] .sidebar {
   gap:12px; 
   align-items:center; 
   margin-bottom:24px;
+  position: relative;
+}
+
+.collapse-btn {
+  transition: all 0.2s;
+}
+
+.collapse-btn:hover {
+  background: rgba(0, 0, 0, 0.1) !important;
+}
+
+body[style*="background: rgb(15, 23, 42)"] .collapse-btn:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
 }
 
 .logo .app-icon{
@@ -129,6 +146,13 @@ body[style*="background: rgb(15, 23, 42)"] .sidebar {
   text-decoration:none;
   transition: background 0.2s, color 0.2s;
   font-weight: 500;
+  font-size: 15px;
+  justify-content: flex-start;
+}
+
+.sidebar.collapsed .nav a {
+  justify-content: center;
+  padding: 12px 8px;
 }
 
 body[style*="background: rgb(15, 23, 42)"] .nav a {
@@ -161,6 +185,7 @@ body[style*="background: rgb(15, 23, 42)"] .nav a:hover {
   margin-top: 20px;
   padding-top: 20px;
   border-top: 1px solid #e5e7eb;
+  font-size: 15px;
 }
 
 body[style*="background: rgb(15, 23, 42)"] .sidebar-bottom {
@@ -306,19 +331,23 @@ body[style*="background: rgb(15, 23, 42)"] .txn {
 /* Responsive Design */
 @media(max-width:1024px) {
   .sidebar {
-    width: 220px;
+    width: 260px;
+  }
+  
+  .sidebar.collapsed {
+    width: 70px;
   }
   
   .container {
-    margin-left: 220px;
+    margin-left: 260px;
   }
 }
 
 @media(max-width:768px){
   .sidebar{
     position: fixed;
-    left: -260px;
-    width: 260px;
+    left: -300px;
+    width: 300px;
     z-index: 999;
     transition: left 0.3s ease;
   }

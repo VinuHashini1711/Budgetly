@@ -33,9 +33,10 @@
 
 .ai-insights-content {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 320px));
+  gap: 20px;
   margin-bottom: 32px;
+  justify-content: center;
 }
 
 .insight-card {
@@ -74,15 +75,15 @@
 
 .insight-card h3 {
   font-weight: 600;
-  font-size: 16px;
+  font-size: 18px;
   margin: 0 0 12px 0;
   color: #f1f5f9;
 }
 
 .insight-card p {
   color: #cbd5e1;
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: 16px;
+  line-height: 1.7;
   margin: 0;
 }
 
@@ -96,6 +97,216 @@
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.1); }
 }
+
+/* AI Prompt Box Styles */
+.ai-prompt-box {
+  background: linear-gradient(135deg, #1e293b 0%, #1a1f2e 100%);
+  border: 1.5px solid #334155;
+  border-radius: 12px;
+  padding: 30px 24px;
+  max-width: 600px;
+  margin: 0 auto;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.ai-prompt-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #8b5cf6, #ec4899);
+  opacity: 0.5;
+}
+
+.ai-prompt-box:hover {
+  border-color: #8b5cf6;
+  box-shadow: 0 12px 24px rgba(193, 115, 244, 0.2);
+  transform: translateY(-2px);
+}
+
+.ai-prompt-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #f1f5f9;
+  background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Response Content Styles */
+.ai-response-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.ai-response-section {
+  border-radius: 16px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.ai-response-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.ai-response-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.ai-response-title {
+  color: #1f2937;
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  background: inherit;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.ai-insight-box {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(168, 85, 247, 0.08) 100%);
+  border: 2px solid rgba(99, 102, 241, 0.2);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.ai-insight-text {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid rgba(99, 102, 241, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  color: #1f2937;
+  line-height: 1.8;
+  font-size: 16px;
+  font-weight: 500;
+  white-space: pre-line;
+}
+
+/* Recommendation Box Styles */
+.ai-recommendation-box {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(5, 150, 105, 0.08) 100%);
+  border: 2px solid rgba(16, 185, 129, 0.25);
+  border-radius: 16px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.ai-recommendation-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.ai-recommendation-item {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 18px 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ai-recommendation-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+}
+
+.ai-recommendation-number {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.ai-recommendation-text {
+  color: #1f2937;
+  font-size: 15px;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+/* Response Heading Bold Styling */
+.ai-response-section h3,
+.ai-response-section h4 {
+  font-weight: 700 !important;
+  color: #1f2937;
+}
+
+/* Button Styles */
+.ai-prompt-box .btn {
+  padding: 12px 20px;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.3s ease;
+}
+
+.ai-prompt-box .btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.ai-prompt-box .btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Light Mode Adjustments */
+body:not([style*="background: rgb(15, 23, 42)"]) .ai-prompt-box {
+  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+  border-color: #e5e7eb;
+}
+
+body:not([style*="background: rgb(15, 23, 42)"]) .ai-prompt-title {
+  color: #1f2937;
+}
+
+
+
+
 
 .ai-loading {
   display: flex;

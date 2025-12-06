@@ -22,10 +22,15 @@ public class TransactionService {
     private final UserRepository userRepository;
 
     private User getCurrentUser() {
-        String identifier = SecurityContextHolder.getContext().getAuthentication().getName();
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || auth.getName() == null || auth.getName().equals("anonymousUser")) {
+            throw new RuntimeException("User not authenticated. Please login again.");
+        }
+        String identifier = auth.getName();
+        System.out.println("Getting current user with identifier: " + identifier);
         return userRepository.findByUsername(identifier)
                 .or(() -> userRepository.findByEmail(identifier))
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found: " + identifier));
     }
 
     public TransactionResponse createTransaction(TransactionRequest request) {

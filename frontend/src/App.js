@@ -8,6 +8,7 @@ import Budgets from './pages/Budgets';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import AIInsights from './pages/AIInsights';
+import Analytics from './pages/Analytics';
 import Goals from './pages/Goals';
 import Community from './pages/Community';
 import Export from './pages/Export';
@@ -17,9 +18,11 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { TransactionProvider } from './context/TransactionContext';
+import { SidebarProvider, useSidebar } from './context/SidebarContext';
 
 function AppContent() {
   const { user } = useAuth();
+  const { isCollapsed } = useSidebar();
   const location = useLocation();
 
   // Pages where Sidebar should be hidden
@@ -44,7 +47,14 @@ function AppContent() {
       {/* ✅ Sidebar visible only when user logged in AND not on auth pages */}
       {user && !noSidebarRoutes.includes(location.pathname) && <Sidebar />}
 
-      <div className="container">
+      <div 
+        className="container" 
+        style={{
+          marginLeft: user && !noSidebarRoutes.includes(location.pathname) 
+            ? (isCollapsed ? '80px' : '300px') 
+            : '0'
+        }}
+      >
         <Routes>
           {/* Root path - Shows Welcome if not authenticated, Dashboard if authenticated */}
           <Route
@@ -55,6 +65,7 @@ function AppContent() {
                 : <Welcome />
             }
           />
+cmd
 
           {/* Public Routes */}
           <Route path="/login" element={<Login />} />
@@ -66,6 +77,7 @@ function AppContent() {
           <Route path="/budgets" element={<ProtectedRoute><Budgets /></ProtectedRoute>} />
           <Route path="/goals" element={<ProtectedRoute><Goals /></ProtectedRoute>} />
           <Route path="/ai-insights" element={<ProtectedRoute><AIInsights /></ProtectedRoute>} />
+          <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
           <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
           <Route path="/export" element={<ProtectedRoute><Export /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
@@ -82,9 +94,11 @@ function AppContent() {
 function App() {
   return (
     <ThemeProvider>
-      <TransactionProvider>
-        <AppContent />
-      </TransactionProvider>
+      <SidebarProvider>
+        <TransactionProvider>
+          <AppContent />
+        </TransactionProvider>
+      </SidebarProvider>
     </ThemeProvider>
   );
 }

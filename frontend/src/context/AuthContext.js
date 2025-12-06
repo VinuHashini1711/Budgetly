@@ -37,7 +37,7 @@ export function AuthProvider({ children }) {
   const login = async (emailOrUsername, password) => {
     try {
       const res = await axios.post(`${API_BASE_URL}/login`, {
-        emailOrUsername, // ✅ Must match backend DTO field
+        identifier: emailOrUsername,
         password,
       });
 

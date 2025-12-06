@@ -140,8 +140,8 @@ export default function AIInsights() {
       </div>
 
       {/* AI Insights Section */}
-      <div className="insight-card" style={{ textAlign: 'center', padding: '30px 24px', maxWidth: 600, margin: '0 auto', width: '100%', background: 'rgba(255, 255, 255, 0.05)' }}>
-        <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16, color: '#000000' }}>Generate AI-Powered Insights</h2>
+      <div className="ai-prompt-box">
+        <h2 className="ai-prompt-title">Generate AI-Powered Insights</h2>
         <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
           <button 
             className="btn" 
@@ -349,15 +349,7 @@ export default function AIInsights() {
 
           {/* Main Insight */}
           <div style={{ padding: '24px' }}>
-            <div style={{ 
-              background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(168, 85, 247, 0.08) 100%)', 
-              border: '2px solid rgba(99, 102, 241, 0.2)', 
-              borderRadius: '16px', 
-              padding: '24px', 
-              marginBottom: '24px',
-              position: 'relative',
-              overflow: 'hidden'
-            }}>
+            <div className="ai-insight-box">
               {/* Decorative elements */}
               <div style={{
                 position: 'absolute',
@@ -387,7 +379,7 @@ export default function AIInsights() {
                   fontSize: '18px',
                   boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)'
                 }}>📊</div>
-                <h4 style={{ 
+                <h4 className="ai-response-title" style={{ 
                   color: '#1f2937', 
                   margin: 0, 
                   fontSize: '20px', 
@@ -401,13 +393,7 @@ export default function AIInsights() {
                 </h4>
               </div>
               
-              <div style={{ 
-                background: 'rgba(255, 255, 255, 0.8)',
-                borderRadius: '12px',
-                padding: '20px',
-                border: '1px solid rgba(99, 102, 241, 0.1)',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)'
-              }}>
+              <div className="ai-insight-text">
                 <div style={{ 
                   color: '#1f2937', 
                   lineHeight: '1.8', 
@@ -422,15 +408,7 @@ export default function AIInsights() {
 
             {/* Recommendations */}
             {insights.recommendation && (
-              <div style={{ 
-                background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(5, 150, 105, 0.08) 100%)', 
-                border: '2px solid rgba(16, 185, 129, 0.25)', 
-                borderRadius: '16px', 
-                padding: '24px',
-                position: 'relative',
-                overflow: 'hidden'
-              }}>
-                {/* Decorative elements */}
+              <div className="ai-recommendation-box">
                 <div style={{
                   position: 'absolute',
                   top: '-15px',
@@ -459,7 +437,7 @@ export default function AIInsights() {
                     fontSize: '18px',
                     boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
                   }}>💡</div>
-                  <h4 style={{ 
+                  <h4 className="ai-response-title" style={{ 
                     color: '#1f2937', 
                     margin: 0, 
                     fontSize: '20px', 
@@ -473,47 +451,11 @@ export default function AIInsights() {
                   </h4>
                 </div>
                 
-                <div style={{ 
-                  display: 'grid', 
-                  gap: '16px' 
-                }}>
+                <div className="ai-recommendation-grid">
                   {formatRecommendations(insights.recommendation).map((rec, index) => (
-                    <div key={index} style={{
-                      background: 'rgba(255, 255, 255, 0.9)',
-                      padding: '18px 20px',
-                      borderRadius: '12px',
-                      border: '1px solid rgba(16, 185, 129, 0.2)',
-                      display: 'flex',
-                      alignItems: 'flex-start',
-                      gap: '16px',
-                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
-                      transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                      cursor: 'default'
-                    }}>
-                      <div style={{
-                        width: '28px',
-                        height: '28px',
-                        background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                        borderRadius: '50%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: 'white',
-                        fontSize: '14px',
-                        fontWeight: 'bold',
-                        flexShrink: 0,
-                        marginTop: '2px'
-                      }}>{index + 1}</div>
-                      <div style={{
-                        flex: 1
-                      }}>
-                        <div style={{ 
-                          color: '#1f2937', 
-                          fontSize: '15px', 
-                          lineHeight: '1.6',
-                          fontWeight: '500'
-                        }}>{rec}</div>
-                      </div>
+                    <div key={index} className="ai-recommendation-item">
+                      <div className="ai-recommendation-number">{index + 1}</div>
+                      <div className="ai-recommendation-text">{rec}</div>
                     </div>
                   ))}
                 </div>

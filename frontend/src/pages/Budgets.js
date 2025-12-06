@@ -99,18 +99,27 @@ export default function Budgets(){
 
     setLoading(true);
     try {
+      // Get current month's start and end dates
+      const now = new Date();
+      const startDate = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+      const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
+
       if (editing) {
         // Update budget
         await axios.put(`/api/budgets/${editing}`, {
           category: form.category,
-          amount: Number(form.amount)
+          amount: Number(form.amount),
+          startDate,
+          endDate
         });
         alert('Budget updated successfully');
       } else {
         // Create new budget
         await axios.post('/api/budgets', {
           category: form.category,
-          amount: Number(form.amount)
+          amount: Number(form.amount),
+          startDate,
+          endDate
         });
         alert('Budget created successfully');
       }
